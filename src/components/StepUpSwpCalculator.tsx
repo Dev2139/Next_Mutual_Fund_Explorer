@@ -16,7 +16,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const theme = useTheme();
     if (active && payload && payload.length) {
         return (
-            <Paper elevation={6} sx={{ p: 2, backgroundColor: alpha(theme.palette.background.paper, 0.95), border: `1px solid ${theme.palette.divider}`, borderRadius: 2 }}>
+            <Paper elevation={6} sx={{ p: 1.5, backgroundColor: alpha(theme.palette.background.paper, 0.95), border: `1px solid ${theme.palette.divider}`, borderRadius: 2 }}>
                 <Typography variant="caption" color="text.secondary" fontWeight={500}>
                     Date: <Box component="span" fontWeight="700">{dayjs(label).format('DD MMM, YYYY')}</Box>
                 </Typography>
@@ -66,90 +66,70 @@ export default function StepUpSwpCalculator({ code }: { code: string }) {
     };
 
     return (
-        <Paper elevation={3} sx={{ width: "100%", borderRadius: 4, p: { xs: 3, md: 5 }, backgroundColor: theme.palette.background.default }}>
-            <Typography variant="h4" fontWeight={700} gutterBottom sx={{ mb: 4, textAlign: "center" }}>
+        <Paper elevation={0} sx={{ width: "100%", borderRadius: 3, border: `1px solid ${theme.palette.divider}`, p: { xs: 2.5, sm: 4 } }}>
+            <Typography variant="h5" fontWeight={700} gutterBottom sx={{ mb: 3 }}>
                 Historical Step-up SWP Calculator
             </Typography>
 
-            {/* Input Section */}
-            <Paper elevation={1} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, mb: 4, backgroundColor: alpha(theme.palette.background.paper, 0.9) }}>
-                <Stack spacing={3}>
+            <Stack spacing={3} sx={{ mb: 4 }}>
+                 <TextField
+                    label="Total Investment Amount"
+                    type="number"
+                    fullWidth
+                    value={initialInvestment || ""}
+                    onChange={(e) => setInitialInvestment(Number(e.target.value))}
+                    InputLabelProps={{ shrink: true }}
+                    InputProps={{ startAdornment: <InputAdornment position="start">₹</InputAdornment> }}
+                />
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
                     <TextField
-                        label="Total Investment Amount"
+                        label="Initial Monthly Withdrawal"
                         type="number"
                         fullWidth
-                        value={initialInvestment || ""}
-                        onChange={(e) => setInitialInvestment(Number(e.target.value))}
+                        value={initialMonthlyWithdrawal || ""}
+                        onChange={(e) => setInitialMonthlyWithdrawal(Number(e.target.value))}
                         InputLabelProps={{ shrink: true }}
                         InputProps={{ startAdornment: <InputAdornment position="start">₹</InputAdornment> }}
                     />
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
-                        <TextField
-                            label="Initial Monthly Withdrawal"
-                            type="number"
-                            fullWidth
-                            value={initialMonthlyWithdrawal || ""}
-                            onChange={(e) => setInitialMonthlyWithdrawal(Number(e.target.value))}
-                            InputLabelProps={{ shrink: true }}
-                            InputProps={{ startAdornment: <InputAdornment position="start">₹</InputAdornment> }}
-                        />
-                        <TextField
-                            label="Annual Step-up"
-                            type="number"
-                            fullWidth
-                            value={stepUpPercentage || ""}
-                            onChange={(e) => setStepUpPercentage(Number(e.target.value))}
-                            InputLabelProps={{ shrink: true }}
-                            InputProps={{ endAdornment: <InputAdornment position="end">%</InputAdornment> }}
-                        />
-                    </Stack>
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
-                        <TextField label="Investment Date" type="date" fullWidth value={from} onChange={(e) => setFrom(e.target.value)} InputLabelProps={{ shrink: true }} />
-                        <TextField label="End Date" type="date" fullWidth value={to} onChange={(e) => setTo(e.target.value)} InputLabelProps={{ shrink: true }} />
-                    </Stack>
-                    <Button
-                        variant="contained"
-                        size="large"
+                    <TextField
+                        label="Annual Step-up"
+                        type="number"
                         fullWidth
-                        onClick={handleCalculate}
-                        disabled={loading}
-                        startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <CalculateIcon />}
-                        sx={{
-                            background: `linear-gradient(135deg, ${theme.palette.success.main}, ${theme.palette.info.main})`,
-                            color: "#fff",
-                            py: 1.8,
-                            fontWeight: 700,
-                            "&:hover": { opacity: 0.9 },
-                        }}
-                    >
-                        {loading ? "Calculating..." : "Calculate Step-up SWP"}
-                    </Button>
+                        value={stepUpPercentage || ""}
+                        onChange={(e) => setStepUpPercentage(Number(e.target.value))}
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{ endAdornment: <InputAdornment position="end">%</InputAdornment> }}
+                    />
                 </Stack>
-            </Paper>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
+                    <TextField label="Investment Date" type="date" fullWidth value={from} onChange={(e) => setFrom(e.target.value)} InputLabelProps={{ shrink: true }} />
+                    <TextField label="End Date" type="date" fullWidth value={to} onChange={(e) => setTo(e.target.value)} InputLabelProps={{ shrink: true }} />
+                </Stack>
+                <Button variant="contained" size="large" fullWidth onClick={handleCalculate} disabled={loading} startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <CalculateIcon />}>
+                    {loading ? "Calculating..." : "Calculate Step-up SWP"}
+                </Button>
+            </Stack>
 
-            {/* Error */}
-            {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+            {error && <Typography color="error" sx={{ mt: 2, textAlign: 'center' }}>Error: {error}</Typography>}
 
-            {/* Result Section */}
             {result && (
                 <Box>
                     <Divider sx={{ my: 3 }} />
-                    {result.corpusRanOutDate && (
+                     {result.corpusRanOutDate && (
                         <Alert severity="warning" sx={{ mb: 3 }}>
-                            Your corpus would have run out on approximately <strong>{dayjs(result.corpusRanOutDate).format("DD MMMM, YYYY")}</strong>.
+                            Your corpus would have run out on approximately **{dayjs(result.corpusRanOutDate).format("DD MMMM, YYYY")}**.
                         </Alert>
                     )}
-
-                    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" }, gap: 3, mb: 4 }}>
+                    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" }, gap: 2, mb: 4 }}>
                         <MetricItem label="Total Investment" value={formatCurrency(result.totalInvested)} color="info" theme={theme} />
                         <MetricItem label="Total Withdrawn" value={formatCurrency(result.totalWithdrawn)} color="warning" theme={theme} />
                         <MetricItem label="Final Value" value={formatCurrency(result.finalValue)} color="success" theme={theme} />
                     </Box>
 
                     {result.growthOverTime?.length > 1 && (
-                        <Box sx={{ borderRadius: 3, overflow: "hidden", p: 2, backgroundColor: alpha(theme.palette.background.paper, 0.8) }}>
+                        <Box>
                             <Typography variant="h6" fontWeight={600} gutterBottom>Corpus Value Over Time</Typography>
-                            <Box sx={{ height: { xs: 300, md: 380 }, mt: 2 }}>
+                            <Box sx={{ height: { xs: 280, md: 360 }, mt: 2 }}>
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart data={result.growthOverTime} margin={{ top: 10, right: 20, left: -10, bottom: 20 }}>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme.palette.divider} />
@@ -171,11 +151,11 @@ export default function StepUpSwpCalculator({ code }: { code: string }) {
 function MetricItem({ label, value, color, theme }: { label: string; value: string; color: "primary" | "secondary" | "success" | "info" | "warning"; theme: any; }) {
     const returnColor = theme.palette[color].main;
     return (
-        <Paper variant="outlined" sx={{ textAlign: "center", p: 3, borderRadius: 3, transition: "all 0.2s", "&:hover": { transform: "translateY(-4px)", boxShadow: theme.shadows[4] } }}>
-            <Typography variant="body2" color="text.secondary" fontWeight={500} sx={{ textTransform: 'uppercase', mb: 1 }}>
+        <Paper variant="outlined" sx={{ textAlign: "center", p: 2, borderRadius: 2 }}>
+            <Typography variant="body2" color="text.secondary" fontWeight={500} sx={{ textTransform: 'uppercase' }}>
                 {label}
             </Typography>
-            <Typography variant="h5" fontWeight={700} sx={{ color: returnColor }}>
+            <Typography variant="h5" fontWeight={700} sx={{ color: returnColor, mt: 0.5 }}>
                 {value}
             </Typography>
         </Paper>
