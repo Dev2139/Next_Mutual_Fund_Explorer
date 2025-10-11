@@ -20,7 +20,7 @@ const getReturnColor = (returnValue: string, theme: any) => {
   return num > 0 ? theme.palette.success.main : theme.palette.error.main;
 };
 
-// A small component for displaying return values
+// Small component for displaying return values
 const ReturnValue = ({ value }: { value: string }) => {
   const theme = useTheme();
   const color = getReturnColor(value, theme);
@@ -31,9 +31,12 @@ const ReturnValue = ({ value }: { value: string }) => {
   );
 };
 
-// The component now renders a TableRow
+// Fund row component
 export default function FundListItem({ fund }: { fund: Scheme }) {
   const theme = useTheme();
+
+  // Skip inactive funds
+  if (!fund.isinGrowth) return null;
 
   // --- PLACEHOLDER DATA ---
   const latestNav = (Math.random() * 200 + 20).toFixed(2);
@@ -42,6 +45,7 @@ export default function FundListItem({ fund }: { fund: Scheme }) {
   const cagr = (parseFloat(threeYearReturn) - 2).toFixed(2);
   // --- END PLACEHOLDER ---
 
+  // Determine category
   let category = "Equity";
   const lowerCaseName = fund.schemeName.toLowerCase();
   if (lowerCaseName.includes("debt") || lowerCaseName.includes("income")) category = "Debt";
@@ -52,18 +56,12 @@ export default function FundListItem({ fund }: { fund: Scheme }) {
     <TableRow
       hover
       sx={{
-        "& > td": {
-          borderBottom: `1px solid ${theme.palette.divider}`,
-        },
-        "&:last-child > td": {
-          borderBottom: 0,
-        },
-        "&:hover": {
-          backgroundColor: alpha(theme.palette.primary.main, 0.04),
-        },
+        "& > td": { borderBottom: `1px solid ${theme.palette.divider}` },
+        "&:last-child > td": { borderBottom: 0 },
+        "&:hover": { backgroundColor: alpha(theme.palette.primary.main, 0.04) },
       }}
     >
-      {/* Name and Category Cell */}
+      {/* Name and Category */}
       <TableCell>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Avatar
@@ -71,13 +69,13 @@ export default function FundListItem({ fund }: { fund: Scheme }) {
               bgcolor: alpha(theme.palette.primary.main, 0.1),
               color: "primary.main",
               fontWeight: 600,
-              fontSize: '0.875rem',
+              fontSize: "0.875rem",
             }}
           >
             {fund.schemeName.charAt(0)}
           </Avatar>
           <Box>
-            <Link href={`/scheme/${fund.schemeCode}`} passHref style={{ textDecoration: 'none' }}>
+            <Link href={`/scheme/${fund.schemeCode}`} passHref style={{ textDecoration: "none" }}>
               <Typography
                 variant="body2"
                 fontWeight={600}
@@ -85,7 +83,7 @@ export default function FundListItem({ fund }: { fund: Scheme }) {
                 sx={{
                   "&:hover": {
                     color: "primary.main",
-                    textDecoration: 'underline',
+                    textDecoration: "underline",
                   },
                 }}
               >
@@ -99,24 +97,16 @@ export default function FundListItem({ fund }: { fund: Scheme }) {
         </Box>
       </TableCell>
 
-      {/* NAV Cell */}
-      <TableCell align="right">
-        <Typography variant="body2" fontWeight={500}>
-          ₹{latestNav}
-        </Typography>
-      </TableCell>
+      {/* NAV */}
+      <TableCell align="right">₹{latestNav}</TableCell>
 
-      {/* 1Y Return Cell */}
+      {/* Returns */}
       <TableCell align="right">
         <ReturnValue value={oneYearReturn} />
       </TableCell>
-
-      {/* 3Y Return Cell */}
       <TableCell align="right">
         <ReturnValue value={threeYearReturn} />
       </TableCell>
-
-      {/* CAGR Cell */}
       <TableCell align="right">
         <ReturnValue value={cagr} />
       </TableCell>

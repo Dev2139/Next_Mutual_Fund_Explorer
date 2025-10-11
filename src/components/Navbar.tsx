@@ -22,7 +22,7 @@ export default function Navbar() {
           </Button>
 
           <Button color="inherit" component={Link} href="/">
-            Home
+            watchlist
           </Button>
         </Box>
       </Toolbar>
