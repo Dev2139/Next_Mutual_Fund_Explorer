@@ -2,6 +2,8 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { CssBaseline } from "@mui/material";
 import Navbar from "@/components/Navbar"; // Import the new client component
+// import "@/app/api/_init/route"; // ensures cron is imported once
+
 
 const inter = Inter({ subsets: ["latin"] });
 
